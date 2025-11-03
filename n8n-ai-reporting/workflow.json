@@ -1,0 +1,80 @@
+{
+  "name": "AI Reporting",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": "0 8 * * *"
+      },
+      "id": "Cron",
+      "name": "Daily 8am",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "https://api.example.com/metrics"
+      },
+      "id": "HTTP",
+      "name": "Fetch Metrics (API)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "chat",
+        "model": "gpt-4o-mini",
+        "text": "Write a 6-bullet executive summary from JSON: {{$json}} with KPI callouts"
+      },
+      "id": "OpenAI",
+      "name": "Summarize Metrics",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "to": "stakeholders@example.com",
+        "subject": "Daily AI Report",
+        "text": "{{$json.summary}}"
+      },
+      "id": "Email",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Daily 8am": {
+      "main": [
+        [
+          {
+            "node": "Fetch Metrics (API)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Metrics (API)": {
+      "main": [
+        [
+          {
+            "node": "Summarize Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize Metrics": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

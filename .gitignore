@@ -1,0 +1,32 @@
+# OS / IDE
+.DS_Store
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+env/
+venv/
+
+# Virtual envs inside subprojects
+n8n-ai-reporting/.venv/
+
+# Secrets / env
+*.env
+.env
+n8n-ai-reporting/.env
+
+# Caches / compiled
+*.egg-info/
+.pybuild/
+build/
+dist/
+
+# Data files you don't want public (uncomment if needed)
+# *.db
+# *.csv
+# *.sqlite
+
+# Streamlit
+.streamlit/secrets.toml

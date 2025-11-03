@@ -1,0 +1,8 @@
+python-dotenv
+SQLAlchemy>=2.0
+psycopg2-binary
+pandas
+pydantic
+sqlparse
+openai>=1.40.0
+streamlit

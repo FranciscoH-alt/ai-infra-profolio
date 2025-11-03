@@ -1,0 +1,111 @@
+{
+  "name": "AI Content Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": "0 9 * * 1"
+      },
+      "id": "Cron",
+      "name": "Cron",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "https://example.com/feed"
+      },
+      "id": "RSS",
+      "name": "Topics (RSS/Sheet)",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "chat",
+        "model": "gpt-4o-mini",
+        "text": "Draft a 400-word post about: {{$json.title}} for SMB owners"
+      },
+      "id": "OpenAI1",
+      "name": "Draft Post",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "chat",
+        "model": "gpt-4o-mini",
+        "text": "Create a short image prompt for the post above"
+      },
+      "id": "OpenAI2",
+      "name": "Generate Image Prompt",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "resource": "page"
+      },
+      "id": "Notion",
+      "name": "Publish to Notion",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "to": "me@example.com",
+        "subject": "New Draft Ready",
+        "text": "{{$json.draft}}"
+      },
+      "id": "Email",
+      "name": "Email for Review",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Cron": {
+      "main": [
+        [
+          {
+            "node": "Topics (RSS/Sheet)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Topics (RSS/Sheet)": {
+      "main": [
+        [
+          {
+            "node": "Draft Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Draft Post": {
+      "main": [
+        [
+          {
+            "node": "Generate Image Prompt",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Publish to Notion",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email for Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "name": "AI Lead Qual & CRM",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead"
+      },
+      "id": "Webhook1",
+      "name": "Inbound Lead Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "chat",
+        "model": "gpt-4o-mini",
+        "text": "Summarize and score 0-100 from JSON: {{$json}}"
+      },
+      "id": "OpenAI1",
+      "name": "Score Lead (GPT)",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json.score}}",
+              "operation": "larger",
+              "value2": 70
+            }
+          ]
+        }
+      },
+      "id": "IF1",
+      "name": "IF High Score",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "resource": "contact"
+      },
+      "id": "HubSpot1",
+      "name": "Create Contact (HubSpot)",
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "text": "New high-quality lead: {{$json.summary}} ({{$json.score}})"
+      },
+      "id": "Slack1",
+      "name": "Notify Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Inbound Lead Webhook": {
+      "main": [
+        [
+          {
+            "node": "Score Lead (GPT)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score Lead (GPT)": {
+      "main": [
+        [
+          {
+            "node": "IF High Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF High Score": {
+      "main": [
+        [
+          {
+            "node": "Create Contact (HubSpot)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notify Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
