@@ -40,3 +40,13 @@ __pycache__/
 .env
 *.env
 n8n-ai-reporting/.env
+.DS_Store
+.idea/
+.venv/
+__pycache__/
+*.pyc
+
+# env files / secrets
+.env
+*.env
+n8n-ai-reporting/.env
