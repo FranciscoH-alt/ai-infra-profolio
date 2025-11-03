@@ -30,3 +30,13 @@ dist/
 
 # Streamlit
 .streamlit/secrets.toml
+.DS_Store
+.idea/
+.venv/
+__pycache__/
+*.pyc
+
+# env files / secrets
+.env
+*.env
+n8n-ai-reporting/.env
